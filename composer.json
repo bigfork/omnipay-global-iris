@@ -1,5 +1,5 @@
 {
-    "name": "jholdroyd/omnipay-releax",
+    "name": "jholdroyd/omnipay-realex",
     "type": "library",
     "description": "Realex gateway for Omnipay payment processing library",
     "keywords": [
