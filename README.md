@@ -33,7 +33,7 @@ And run composer to update your dependencies:
 The following gateways are provided by this package:
 
 
-* Realex_Hosted (Realex Hosted Payment Page)
+* Realex_Redirect (Realex Hosted Payment Page)
 
 For general usage instructions, please see the main [Omnipay](https://github.com/omnipay/omnipay)
 repository.

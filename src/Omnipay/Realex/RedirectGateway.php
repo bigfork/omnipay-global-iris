@@ -2,16 +2,17 @@
 
 namespace Omnipay\Realex;
 
+use Omnipay\Common\AbstractGateway;
 use Omnipay\Common\Exception\InvalidRequestException;
 
 /**
- * Realex Hosted Class
+ * Realex Redirect Class
  */
-class HostedGateway extends AbstractGateway
+class RedirectGateway extends AbstractGateway
 {
     public function getName()
     {
-        return 'Realex Hosted';
+        return 'Realex Redirect';
     }
 
     public function getDefaultParameters()
@@ -43,24 +44,14 @@ class HostedGateway extends AbstractGateway
         return $this->setParameter('secret', $value);
     }
 
-    public function authorize(array $parameters = array())
-    {
-        return $this->createRequest('\Omnipay\Realex\Message\HostedAuthorizeRequest', $parameters);
-    }
-
-    public function completeAuthorize(array $parameters = array())
-    {
-        return $this->createRequest('\Omnipay\Realex\Message\HostedCompleteAuthorizeRequest', $parameters);
-    }
-
     public function purchase(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\Realex\Message\HostedPurchaseRequest', $parameters);
+        return $this->createRequest('\Omnipay\Realex\Message\RedirectPurchaseRequest', $parameters);
     }
 
     public function completePurchase(array $parameters = array())
     {
-        return $this->completeAuthorize($parameters);
+        return $this->createRequest('\Omnipay\Realex\Message\RedirectCompletePurchaseRequest', $parameters);
     }
 
 }
