@@ -3,7 +3,6 @@
 namespace Omnipay\Realex;
 
 use Omnipay\Common\AbstractGateway;
-use Omnipay\Common\Exception\InvalidRequestException;
 
 /**
  * Realex Redirect Class
@@ -19,8 +18,8 @@ class RedirectGateway extends AbstractGateway
     {
         return array(
             'merchantId' => '',
-            'secret' => '',
-            'testMode' => false
+            'secret'     => '',
+            'testMode'   => false
         );
     }
 
@@ -63,5 +62,4 @@ class RedirectGateway extends AbstractGateway
     {
         return $this->completeAuthorize($parameters);
     }
-
 }
