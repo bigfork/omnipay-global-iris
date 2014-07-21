@@ -7,7 +7,7 @@ use Omnipay\Common\AbstractGateway;
 /**
  * Realex Direct Class
  */
-class RedirectGateway extends RedirectGateway
+class RemoteGateway extends RedirectGateway
 {
     public function getName()
     {

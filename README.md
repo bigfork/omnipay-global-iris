@@ -34,7 +34,7 @@ The following gateways are provided by this package:
 
 
 * Realex_Redirect (Realex Hosted Payment Page)
-* Realex_Direct (Realex Integrated Payments)
+* Realex_Remote (Realex API)
 
 For general usage instructions, please see the main [Omnipay](https://github.com/omnipay/omnipay)
 repository.
