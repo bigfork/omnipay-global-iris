@@ -37,12 +37,13 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $this->getCard()->validate();
 
         $data = array(
-            'MERCHANT_ID'      => $this->getMerchantId(),
-            'ORDER_ID'         => $this->getTransactionId(),
-            'CURRENCY'         => $this->getCurrency(),
-            'AMOUNT'           => round( $this->getAmount() * 100 ),
-            'TIMESTAMP'        => gmdate('YmdHis'),
-            'AUTO_SETTLE_FLAG' => $autoSettle
+            'MERCHANT_ID'           => $this->getMerchantId(),
+            'ORDER_ID'              => $this->getTransactionId(),
+            'CURRENCY'              => $this->getCurrency(),
+            'AMOUNT'                => round( $this->getAmount() * 100 ),
+            'TIMESTAMP'             => gmdate('YmdHis'),
+            'AUTO_SETTLE_FLAG'      => $autoSettle,
+            'MERCHANT_RESPONSE_URL' => $this->getNotifyUrl()
         );
 
         $data['SHA1HASH'] = $this->createSignature($data);
