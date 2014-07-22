@@ -50,7 +50,7 @@ class RedirectGateway extends AbstractGateway
 
     public function completeAuthorize(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\Realex\Message\RedirectCompleteAuthorizeResponse', $parameters);
+        return $this->createRequest('\Omnipay\Realex\Message\RedirectCompleteAuthorizeRequest', $parameters);
     }
 
     public function purchase(array $parameters = array())

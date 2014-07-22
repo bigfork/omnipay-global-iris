@@ -32,15 +32,11 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     public function getBaseData($autoSettle = true)
     {
-        $this->validate('amount', 'card');
-
-        $this->getCard()->validate();
-
         $data = array(
             'MERCHANT_ID'           => $this->getMerchantId(),
             'ORDER_ID'              => $this->getTransactionId(),
             'CURRENCY'              => $this->getCurrency(),
-            'MERCHANT_RESPONSE_URL' => $this->getNotifyUrl(),
+            'MERCHANT_RESPONSE_URL' => $this->getReturnUrl(),
             'AMOUNT'                => round( $this->getAmount() * 100 ),
             'TIMESTAMP'             => gmdate('YmdHis'),
             'AUTO_SETTLE_FLAG'      => $autoSettle

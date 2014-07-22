@@ -2,15 +2,13 @@
 
 namespace Omnipay\Realex\Message;
 
-use Omnipay\Common\Message\RedirectResponseInterface;
-
 /**
  * Realex Redirect Purchase Request
  */
 class RedirectPurchaseRequest extends RedirectAuthorizeRequest
 {
-    public function getRedirectData()
+    public function sendData($data)
     {
-        return $this->getRequest()->getBaseData();
+        return $this->response = new RedirectPurchaseResponse($this, $data);
     }
 }

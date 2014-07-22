@@ -2,23 +2,36 @@
 
 namespace Omnipay\Realex\Message;
 
-use Omnipay\Common\Message\RequestInterface;
+use Omnipay\Common\Exception\InvalidResponseException;
 
 /**
  * Realex Redirect Complete Authorize Request
  */
-class RedirectCompleteAuthorizeResponse extends Response
+class RedirectCompleteAuthorizeRequest extends AbstractRequest
 {
-    public function __construct(RequestInterface $request, $data)
+    public function getData()
     {
-        $this->request = $request;
-        $this->data = $data;
+        // Build initial hash
+        $hash = sha1(implode('.', array(
+            $this->httpRequest->request->get('TIMESTAMP'),
+            $this->getMerchantId(),
+            $this->httpRequest->request->get('ORDER_ID'),
+            $this->httpRequest->request->get('RESULT'),
+            $this->httpRequest->request->get('MESSAGE'),
+            $this->httpRequest->request->get('PASREF'),
+            $this->httpRequest->request->get('AUTHCODE')
+        )));
+
+        // Validate signature
+        if ( $this->httpRequest->request->get('SHA1HASH') !== sha1($hash.'.'.$this->getSecret()) ) {
+            throw new InvalidResponseException;
+        }
+
+        return $this->httpRequest->request->all();
     }
 
-    public function getTransactionReference()
+    public function sendData($data)
     {
-        echo '<pre>';
-            print_r($this->data);
-        echo '</pre>';
+        return $this->response = new Response($this, $data);
     }
 }

@@ -5,9 +5,9 @@ namespace Omnipay\Realex\Message;
 use Omnipay\Common\Message\RedirectResponseInterface;
 
 /**
- * Realex Redirect Authorize Request
+ * Realex Redirect Authorize Response
  */
-class RedirectAuthorizeRequest extends Response implements RedirectResponseInterface
+class RedirectAuthorizeResponse extends Response implements RedirectResponseInterface
 {
     protected $liveCheckoutEndpoint = 'https://hpp.realexpayments.com/pay';
     protected $testCheckoutEndpoint = 'https://hpp.sandbox.realexpayments.com/pay';
