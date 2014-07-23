@@ -14,7 +14,7 @@ class RedirectCompleteAuthorizeRequest extends AbstractRequest
         // Build initial hash
         $hash = sha1(implode('.', array(
             $this->httpRequest->request->get('TIMESTAMP'),
-            $this->getMerchantId(),
+            $this->httpRequest->request->get('MERCHANT_ID'),
             $this->httpRequest->request->get('ORDER_ID'),
             $this->httpRequest->request->get('RESULT'),
             $this->httpRequest->request->get('MESSAGE'),

@@ -18,8 +18,8 @@ class RedirectGateway extends AbstractGateway
     {
         return array(
             'merchantId' => '',
-            'secret'     => '',
-            'testMode'   => false
+            'secret' => '',
+            'testMode' => false
         );
     }
 

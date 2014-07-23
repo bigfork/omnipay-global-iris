@@ -14,6 +14,7 @@ class Response extends AbstractResponse
     {
         $this->request = $request;
         $this->data    = $data;
+        print_r($data);
     }
 
     public function isSuccessful()

@@ -7,9 +7,6 @@ namespace Omnipay\Realex\Message;
  */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    protected $liveEndpoint = 'https://hpp.realexpayments.com/pay';
-    protected $testEndpoint = 'https://hpp.sandbox.realexpayments.com/pay';
-
     public function getMerchantId()
     {
         return $this->getParameter('merchantId');
@@ -18,6 +15,16 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setMerchantId($value)
     {
         return $this->setParameter('merchantId', $value);
+    }
+
+    public function getAccount()
+    {
+        return $this->getParameter('account');
+    }
+
+    public function setAccount($value)
+    {
+        return $this->setParameter('account', $value);
     }
 
     public function getSecret()
@@ -34,7 +41,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     {
         $data = array(
             'MERCHANT_ID'           => $this->getMerchantId(),
-            'ORDER_ID'              => $this->getTransactionId(),
+            'ORDER_ID'              => $this->setTransactionId(),
             'CURRENCY'              => $this->getCurrency(),
             'MERCHANT_RESPONSE_URL' => $this->getReturnUrl(),
             'AMOUNT'                => round( $this->getAmount() * 100 ),
@@ -47,9 +54,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $data;
     }
 
-    public function createSignature($data)
+    public function createSignature($data, $method = 'sha1')
     {
-        $hash = sha1(implode('.', array(
+        $hash = $method(implode('.', array(
             gmdate('YmdHis'),
             $data['MERCHANT_ID'],
             $data['ORDER_ID'],
@@ -57,7 +64,55 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             $data['CURRENCY']
         )));
 
-        return sha1("{$hash}.".$this->getSecret());
+        return $method($hash.'.'.$this->getSecret());
+    }
+
+    public function buildXML($data, $card)
+    {
+        $request = new \SimpleXMLElement('<request />');
+
+        $request['timestamp']        = $data['TIMESTAMP'];
+        $request['type']             = 'auth';
+
+        $request->merchantid         = $this->getMerchantId();
+        $request->account            = $this->getAccount();
+        $request->orderid            = $data['ORDER_ID'];
+        $request->sha1hash           = $data['SHA1HASH'];
+        $request->md5hash            = $this->createSignature($data, 'md5');
+        $request->custipaddress      = $_SERVER['REMOTE_ADDR'];
+
+        $request->amount             = $data['AMOUNT'];
+        $request->amount['currency'] = $data['CURRENCY'];
+
+        $request->autosettle['flag'] = (int)$data['AUTO_SETTLE_FLAG'];
+
+        $request->card->number       = $card->getNumber();
+        $request->card->expdate      = $card->getExpiryDate('my');
+        $request->card->chname       = $card->getFirstName().' '.$card->getLastName();
+        $request->card->type         = strtoupper($card->getBrand());
+        $request->card->issueno      = $card->getIssueNumber();
+        $request->card->cvn->number  = $card->getCvv();
+        $request->card->cvn->presind = '1';
+
+        $request->address['type']    = 'billing';
+        $request->address->code      = $card->getPostcode();
+        $request->address->country   = strtoupper($card->getCountry());
+
+        return $request->asXML();
+    }
+
+    public function sendData($data)
+    {
+        $httpResponse = $this->httpClient->post($this->getEndpoint(), null, $data)->send();
+
+        return $this->createResponse((string)$httpResponse->getBody());
+    }
+
+    protected function createResponse($data)
+    {
+        print_r($data);
+        exit();
+        return $this->response = new Response($this, $data);
     }
 
     protected function getEndpoint()
