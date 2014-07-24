@@ -7,16 +7,31 @@ namespace Omnipay\Realex\Message;
  */
 class RemoteAuthorizeRequest extends AbstractRequest
 {
-    protected $liveEndpoint = 'https://epage.payandshop.com/epage-remote.cgi';
-    protected $testEndpoint = 'https://epage.payandshop.com/epage-remote.cgi';
+    protected $liveCheckoutEndpoint = 'https://epage.payandshop.com/epage-remote.cgi';
+    protected $testCheckoutEndpoint = 'https://epage.payandshop.com/epage-remote.cgi';
 
     public function getData()
     {
         $this->validate('amount', 'card');
         $this->getCard()->validate();
 
-        $data = $this->getBaseData(false);
+        return $this->getRequestXML($this->getCard(), false);
+    }
 
-        return $this->buildXML($data, $this->getCard());
+    public function sendData($data)
+    {
+        $httpResponse = $this->httpClient->post($this->getCheckoutEndpoint(), null, $data)->send();
+
+        return $this->createResponse((string)$httpResponse->getBody());
+    }
+
+    protected function createResponse($data)
+    {
+        return $this->response = new RemoteAuthorizeResponse($this, $data);
+    }
+
+    protected function getCheckoutEndpoint()
+    {
+        return $this->getTestMode() ? $this->testCheckoutEndpoint : $this->liveCheckoutEndpoint;
     }
 }

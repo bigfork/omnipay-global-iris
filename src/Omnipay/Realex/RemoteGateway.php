@@ -2,56 +2,14 @@
 
 namespace Omnipay\Realex;
 
-use Omnipay\Common\AbstractGateway;
-
 /**
  * Realex Remote Class
  */
-class RemoteGateway extends AbstractGateway
+class RemoteGateway extends RedirectGateway
 {
     public function getName()
     {
         return 'Realex Remote';
-    }
-
-    public function getDefaultParameters()
-    {
-        return array(
-            'merchantId' => '',
-            'secret' => '',
-            'account' => '',
-            'testMode' => false
-        );
-    }
-
-    public function getMerchantId()
-    {
-        return $this->getParameter('merchantId');
-    }
-
-    public function setMerchantId($value)
-    {
-        return $this->setParameter('merchantId', $value);
-    }
-
-    public function getAccount()
-    {
-        return $this->getParameter('account');
-    }
-
-    public function setAccount($value)
-    {
-        return $this->setParameter('account', $value);
-    }
-
-    public function getSecret()
-    {
-        return $this->getParameter('secret');
-    }
-
-    public function setSecret($value)
-    {
-        return $this->setParameter('secret', $value);
     }
 
     public function authorize(array $parameters = array())

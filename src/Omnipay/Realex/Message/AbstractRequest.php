@@ -37,11 +37,11 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->setParameter('secret', $value);
     }
 
-    public function getBaseData($autoSettle = true)
+    public function getBaseData($autoSettle = true, $card = null)
     {
         $data = array(
             'MERCHANT_ID'           => $this->getMerchantId(),
-            'ORDER_ID'              => $this->setTransactionId(),
+            'ORDER_ID'              => $this->getTransactionId(),
             'CURRENCY'              => $this->getCurrency(),
             'MERCHANT_RESPONSE_URL' => $this->getReturnUrl(),
             'AMOUNT'                => round( $this->getAmount() * 100 ),
@@ -49,26 +49,28 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             'AUTO_SETTLE_FLAG'      => $autoSettle
         );
 
-        $data['SHA1HASH'] = $this->createSignature($data);
+        $data['SHA1HASH'] = $this->createSignature($data, 'sha1', $card);
 
         return $data;
     }
 
-    public function createSignature($data, $method = 'sha1')
+    public function createSignature($data, $method = 'sha1', $card = null)
     {
-        $hash = $method(implode('.', array(
-            gmdate('YmdHis'),
+        $hash = $method(rtrim(implode('.', array(
+            $data['TIMESTAMP'],
             $data['MERCHANT_ID'],
             $data['ORDER_ID'],
             $data['AMOUNT'],
-            $data['CURRENCY']
-        )));
+            $data['CURRENCY'],
+            $card !== null ? $card->getNumber() : null
+        )), '.'));
 
         return $method($hash.'.'.$this->getSecret());
     }
 
-    public function buildXML($data, $card)
+    public function getRequestXML($card, $autoSettle = true)
     {
+        $data    = $this->getBaseData($autoSettle, $card);
         $request = new \SimpleXMLElement('<request />');
 
         $request['timestamp']        = $data['TIMESTAMP'];
@@ -78,7 +80,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $request->account            = $this->getAccount();
         $request->orderid            = $data['ORDER_ID'];
         $request->sha1hash           = $data['SHA1HASH'];
-        $request->md5hash            = $this->createSignature($data, 'md5');
+        $request->md5hash            = $this->createSignature($data, 'md5', $card);
         $request->custipaddress      = $_SERVER['REMOTE_ADDR'];
 
         $request->amount             = $data['AMOUNT'];
@@ -99,25 +101,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $request->address->country   = strtoupper($card->getCountry());
 
         return $request->asXML();
-    }
-
-    public function sendData($data)
-    {
-        $httpResponse = $this->httpClient->post($this->getEndpoint(), null, $data)->send();
-
-        return $this->createResponse((string)$httpResponse->getBody());
-    }
-
-    protected function createResponse($data)
-    {
-        print_r($data);
-        exit();
-        return $this->response = new Response($this, $data);
-    }
-
-    protected function getEndpoint()
-    {
-        return $this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint;
     }
 
 }

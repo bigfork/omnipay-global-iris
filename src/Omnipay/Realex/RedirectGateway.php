@@ -18,8 +18,9 @@ class RedirectGateway extends AbstractGateway
     {
         return array(
             'merchantId' => '',
-            'secret' => '',
-            'testMode' => false
+            'secret'     => '',
+            'account'    => 'internet',
+            'testMode'   => false
         );
     }
 
@@ -41,6 +42,16 @@ class RedirectGateway extends AbstractGateway
     public function setSecret($value)
     {
         return $this->setParameter('secret', $value);
+    }
+
+    public function getAccount()
+    {
+        return $this->getParameter('account');
+    }
+
+    public function setAccount($value)
+    {
+        return $this->setParameter('account', $value);
     }
 
     public function authorize(array $parameters = array())
