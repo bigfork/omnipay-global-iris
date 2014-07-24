@@ -2,7 +2,6 @@
 
 **Realex driver for the Omnipay PHP payment processing library**
 
-[![Build Status](https://travis-ci.org/jholdroyd/omnipay-realex.png?branch=master)](https://travis-ci.org/jholdroyd/omnipay-realex)
 [![Latest Stable Version](https://poser.pugx.org/jholdroyd/omnipay-realex/version.png)](https://packagist.org/packages/jholdroyd/omnipay-realex)
 [![Total Downloads](https://poser.pugx.org/jholdroyd/omnipay-realex/d/total.png)](https://packagist.org/packages/jholdroyd/omnipay-realex)
 
