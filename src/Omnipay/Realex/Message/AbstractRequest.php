@@ -97,8 +97,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $request->card->cvn->presind = '1';
 
         $request->address['type']    = 'billing';
-        $request->address->code      = $card->getPostcode();
-        $request->address->country   = strtoupper($card->getCountry());
+        $request->address->code      = $card->getBillingPostcode();
+        $request->address->country   = strtoupper($card->getBillingCountry());
 
         return $request->asXML();
     }
