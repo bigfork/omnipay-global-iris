@@ -43,7 +43,7 @@ class RemoteAuthorizeRequest extends AbstractRequest
         $card = $this->getCard();
         $card->validate();
 
-        foreach (array('name', 'cvv') as $parameter) {
+        foreach (array('name', 'cvv', 'billingPostcode', 'billingCountry') as $parameter) {
             $method = 'get'.ucfirst($parameter);
             if ( ! $card->$method()) {
                 throw new InvalidCreditCardException("The $parameter parameter is required");
