@@ -81,7 +81,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $request->orderid            = $data['ORDER_ID'];
         $request->sha1hash           = $data['SHA1HASH'];
         $request->md5hash            = $this->createSignature($data, 'md5', $card);
-        $request->custipaddress      = $_SERVER['REMOTE_ADDR'];
+        $request->custipaddress      = $this->getClientIp();
 
         $request->amount             = $data['AMOUNT'];
         $request->amount['currency'] = $data['CURRENCY'];
