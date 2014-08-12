@@ -9,8 +9,7 @@ class RemotePurchaseRequest extends RemoteAuthorizeRequest
 {
     public function getData()
     {
-        $this->validate('amount', 'billingPostcode', 'billingCountry', 'card');
-        $this->getCard()->validate();
+        $this->validateData();
 
         return $this->getRequestXML($this->getCard());
     }

@@ -2,6 +2,8 @@
 
 namespace Omnipay\Realex\Message;
 
+use Omnipay\Common\Exception\InvalidCreditCardException;
+
 /**
  * Realex Remote Authorize Request
  */
@@ -12,8 +14,7 @@ class RemoteAuthorizeRequest extends AbstractRequest
 
     public function getData()
     {
-        $this->validate('amount', 'billingPostcode', 'billingCountry', 'card');
-        $this->getCard()->validate();
+        $this->validateData();
 
         return $this->getRequestXML($this->getCard(), false);
     }
@@ -33,5 +34,20 @@ class RemoteAuthorizeRequest extends AbstractRequest
     protected function getCheckoutEndpoint()
     {
         return $this->getTestMode() ? $this->testCheckoutEndpoint : $this->liveCheckoutEndpoint;
+    }
+
+    protected function validateData()
+    {
+        $this->validate('amount', 'card');
+
+        $card = $this->getCard();
+        $card->validate();
+
+        foreach (array('name', 'cvv', 'billingPostcode', 'billingCountry') as $parameter) {
+            $method = 'get'.ucfirst($parameter);
+            if ( ! $card->$method()) {
+                throw new InvalidCreditCardException("The $parameter parameter is required");
+            }
+        }
     }
 }
