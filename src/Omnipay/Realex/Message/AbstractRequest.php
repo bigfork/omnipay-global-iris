@@ -37,6 +37,66 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->setParameter('secret', $value);
     }
 
+    public function setStore($value)
+    {
+        return $this->setParameter('store', $value);
+    }
+
+    public function getStore()
+    {
+        return $this->getParameters('store');
+    }
+
+    public function getPares()
+    {
+        return $this->getParameter('pares');
+    }
+
+    public function setPares($value)
+    {
+        return $this->setParameter('pares', $value);
+    }
+
+    public function setCavv($value)
+    {
+        return $this->setParameter('cavv', $value);
+    }
+
+    public function getCavv()
+    {
+        return $this->getParameter('cavv');
+    }
+
+    public function setXid($value)
+    {
+        return $this->setParameter('xid', $value);
+    }
+
+    public function getXid()
+    {
+        return $this->getParameter('xid');
+    }
+
+    public function setEci($value)
+    {
+        return $this->setParameter('eci', $value);
+    }
+
+    public function getEci()
+    {
+        return $this->getParameter('eci');
+    }
+
+    public function setNotifyUrl($value)
+    {
+        return $this->setParameter('notifyUrl', $value);
+    }
+
+    public function getNotifyUrl()
+    {
+        return $this->getParameter('notifyUrl');
+    }
+
     public function getBaseData($autoSettle = true, $card = null)
     {
         $data = array(
@@ -64,23 +124,22 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             $data['CURRENCY'],
             $card !== null ? $card->getNumber() : null
         )), '.'));
-
+        
         return $method($hash.'.'.$this->getSecret());
     }
 
-    public function getRequestXML($card, $autoSettle = true)
+    public function getRequestXML($card, $autoSettle = true, $extraData = array(), $addressData = true, $cardData = true)
     {
         $data    = $this->getBaseData($autoSettle, $card);
         $request = new \SimpleXMLElement('<request />');
 
         $request['timestamp']        = $data['TIMESTAMP'];
-        $request['type']             = 'auth';
+        $request['type']             = $this->getType();
 
         $request->merchantid         = $this->getMerchantId();
         $request->account            = $this->getAccount();
         $request->orderid            = $data['ORDER_ID'];
-        $request->sha1hash           = $data['SHA1HASH'];
-        $request->md5hash            = $this->createSignature($data, 'md5', $card);
+        //$request->md5hash            = $this->createSignature($data, 'md5', $card);
         $request->custipaddress      = $this->getClientIp();
 
         $request->amount             = $data['AMOUNT'];
@@ -90,17 +149,38 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
         $request->card->number       = $card->getNumber();
         $request->card->expdate      = $card->getExpiryDate('my');
-        $request->card->chname       = $card->getName();
         $request->card->type         = strtoupper($card->getBrand());
-        $request->card->issueno      = $card->getIssueNumber();
-        $request->card->cvn->number  = $card->getCvv();
-        $request->card->cvn->presind = '1';
+        $request->card->chname       = $card->getName();
 
-        $request->address['type']    = 'billing';
-        $request->address->code      = $card->getBillingPostcode();
-        $request->address->country   = strtoupper($card->getBillingCountry());
+        // Not all request want this data
+        if($cardData) {
+            $request->card->issueno      = $card->getIssueNumber();
+            $request->card->cvn->number  = $card->getCvv();
+            $request->card->cvn->presind = '1';
+        }
+
+        // not all requests want this data
+        if($addressData) {
+            $request->address['type']    = 'billing';
+            $request->address->code      = $card->getBillingPostcode();
+            $request->address->country   = strtoupper($card->getBillingCountry());
+        }
+
+        // Add in extra array data for any obscure fields
+        if(!empty($extraData)) {
+            foreach($extraData as $key => $value) {
+                $request->$key = $value;
+            }
+        }
+
+        $request->sha1hash           = $data['SHA1HASH'];
 
         return $request->asXML();
+    }
+
+    protected function getType()
+    {
+        return 'auth';
     }
 
 }
