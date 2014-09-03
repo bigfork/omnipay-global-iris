@@ -6,11 +6,13 @@ use Omnipay\Common\Exception\InvalidCreditCardException;
 
 /**
  * Realex Remote Authorize Request
+ * First request, verifies 3ds enrollment
  */
 class RemoteAuthorizeRequest extends AbstractRequest
 {
     protected $liveCheckoutEndpoint = 'https://epage.payandshop.com/epage-remote.cgi';
     protected $testCheckoutEndpoint = 'https://epage.payandshop.com/epage-remote.cgi';
+    protected $responseData;
 
     public function getData()
     {
@@ -21,14 +23,69 @@ class RemoteAuthorizeRequest extends AbstractRequest
 
     public function sendData($data)
     {
+        // Make a request and get some datas back
+        $response = [];
         $httpResponse = $this->httpClient->post($this->getCheckoutEndpoint(), null, $data)->send();
+        $this->responseData = $httpResponse->xml();
 
-        return $this->createResponse((string)$httpResponse->getBody());
+        // Verify the request via some error codes
+        $validationMessage = $this->validateResponse();
+        if($validationMessage !== true)
+            throw new \Exception($validationMessage);
+
+        // If the card is not enrolled, and no attempt URL is provided, we can go straight to auth
+        if(((string)$this->responseData->result == 110) && ((string)$this->responseData->enrolled == "N")) {
+            // get some card detils
+            $card = $this->getCard();
+
+            // Set the ECI type based on the card
+            $eci = ($card->getBrand() == "visa" ? 6 : 1);
+
+            echo "ECI " . $eci . " Auth Send: Please contact support";
+            exit;
+
+        } elseif(((string)$this->responseData->result == 110) && ((string)$this->responseData->enrolled == "U")) {
+            
+            // Unable to verfiy enrollment
+            $eci = 7;
+
+            echo "ECI 7 Auth Send: Please contact support";
+            exit;
+
+        }
+
+        // Get card and order details
+        $card = $this->getCard();
+        $mdData = array(
+            "number"            => $card->getNumber(),
+            "billingPostcode"   => $card->getBillingPostcode(),
+            "billingCountry"    => $card->getBillingCountry(),
+            "expiryMonth"       => $card->getExpiryMonth(),
+            "expiryYear"        => $card->getExpiryYear(),
+            "billingFirstName"  => $card->getBillingFirstName(),
+            "billingLastName"   => $card->getBillingLastName(),
+            "shippingFirstName" => $card->getShippingFirstName(),
+            "shippingLastName"  => $card->getShippingLastName(),
+            "cvv"               => $card->getCvv(),
+            "transactionid"     => (string)$this->responseData->orderid,
+            "store"             => $this->getStore()
+        );
+
+        // Build a query from the array data
+        $reference = http_build_query($mdData);
+        $response['url'] = (string)$this->responseData->url;
+        $response['data']['PaReq'] = (string)$this->responseData->pareq;
+        $response['data']['MD'] = base64_encode($reference);
+        $response['data']['TermUrl'] = $this->getNotifyUrl();
+        $response['data']['transactionid'] = (string)$this->responseData->orderid;
+
+        // Return the 3d secure response
+        return $this->createResponse($response, true);
     }
 
-    protected function createResponse($data)
+    protected function createResponse($data, $threeD = false)
     {
-        return $this->response = new RemoteAuthorizeResponse($this, $data);
+        return $this->response = $threeD ? new ThreeDSecureResponse($this, $data) : new RemoteAuthorizeResponse($this, $data);
     }
 
     protected function getCheckoutEndpoint()
@@ -49,5 +106,19 @@ class RemoteAuthorizeRequest extends AbstractRequest
                 throw new InvalidCreditCardException("The $parameter parameter is required");
             }
         }
+    }
+
+    protected function getType()
+    {
+        return '3ds-verifyenrolled';
+    }
+
+    protected function validateResponse()
+    {
+        // If we get a 500 error, we should send back an issue
+        if((string)$this->responseData->result >= 501)
+            return (string)$this->responseData->message;
+
+        return true;
     }
 }

@@ -11,7 +11,7 @@ class ThreeDSecureResponse extends Response implements RedirectResponseInterface
 {
     protected $liveCheckoutEndpoint = 'https://hpp.realexpayments.com/pay';
     protected $testCheckoutEndpoint = 'https://hpp.sandbox.realexpayments.com/pay';
-    protected $successful = false;
+    public $successful = false;
 
     public function isSuccessful()
     {
@@ -25,12 +25,12 @@ class ThreeDSecureResponse extends Response implements RedirectResponseInterface
 
     public function getRedirectUrl()
     {
-        return $this->data['url'];
+        return isset($this->data['url']) ? $this->data['url'] : null;
     }
 
     public function getTransactionReference()
     {
-        return $this->data['data']['transactionid'];
+        return isset($this->data['data']['transactionid']) ? $this->data['data']['transactionid'] : null;
     }
 
     public function getNotifyUrl() 

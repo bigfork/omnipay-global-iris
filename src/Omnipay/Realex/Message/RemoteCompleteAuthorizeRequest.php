@@ -6,6 +6,7 @@ use Omnipay\Common\Exception\InvalidResponseException;
 
 /**
  * Realex Remote Complete Authorize Request
+ * 2nd step, verifies the signature from a request
  */
 class RemoteCompleteAuthorizeRequest extends AbstractRequest
 {
@@ -25,12 +26,10 @@ class RemoteCompleteAuthorizeRequest extends AbstractRequest
         $httpResponse = $this->httpClient->post($this->getCheckoutEndpoint(), null, $data)->send();
         $this->responseData = $httpResponse->xml();
 
-        print_r($this->responseData);
-
         // Verify the request via some error codes
         $validationMessage = $this->validateResponse();
         if($validationMessage !== true)
-            throw new \Exception($validationMessage);
+            throw new InvalidResponseException($validationMessage);
 
         // Port some variables into a neat array
         $storeArray = $this->getStore();
@@ -47,7 +46,8 @@ class RemoteCompleteAuthorizeRequest extends AbstractRequest
             'store'         => $storeArray['store'],
             'account'       => $storeArray['account'],
             'card'          => $this->getCard(),
-            'secret'        => $storeArray['secret']
+            'secret'        => $storeArray['secret'],
+            'url'           => "/beta/checkout/complete_purchase"
         ];
 
         // if the card is not enrolled (11), enrolled result (N)
@@ -107,6 +107,10 @@ class RemoteCompleteAuthorizeRequest extends AbstractRequest
         
         if((string)$this->responseData->status == "A")
             return "The cardholder is enrolled and the bank has acknowleged the attempted authentication.";
+
+        // If we get a 500 error, we should send back an issue
+        if((string)$this->responseData->result >= 501)
+            return (string)$this->responseData->message;
 
         return true;
     }

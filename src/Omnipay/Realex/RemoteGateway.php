@@ -19,7 +19,7 @@ class RemoteGateway extends RedirectGateway
 
     public function completeAuthorize(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\Realex\Message\RemoteCompleteAuthorizeResponse', $parameters);
+        return $this->createRequest('\Omnipay\Realex\Message\RemoteCompleteAuthorizeRequest', $parameters);
     }
 
     public function purchase(array $parameters = array())
@@ -29,6 +29,6 @@ class RemoteGateway extends RedirectGateway
 
     public function completePurchase(array $parameters = array())
     {
-        return $this->completeAuthorize($parameters);
+        return $this->createRequest('\Omnipay\Realex\Message\RemoteCompletePurchaseRequest', $parameters);
     }
 }

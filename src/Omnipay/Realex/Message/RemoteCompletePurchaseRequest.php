@@ -24,13 +24,8 @@ class RemoteCompletePurchaseRequest extends AbstractRequest
     // Send data
     public function sendData($data)
     {
-        print_r($data);
-
         $httpResponse = $this->httpClient->post($this->getCheckoutEndpoint(), null, $data)->send();
         $this->responseData = $httpResponse->xml();
-
-        print_r($this->responseData);
-        exit;
 
         // Verify the request via some error codes
         $validationMessage = $this->validateResponse();
@@ -54,7 +49,9 @@ class RemoteCompletePurchaseRequest extends AbstractRequest
         ];
 
         // Return the 3d secure response
-        return $this->createResponse($response, true);
+        $return = $this->createResponse($response, true);
+        $return->successful = true;
+        return $return;
     }
 
     // get request XML
@@ -96,7 +93,7 @@ class RemoteCompletePurchaseRequest extends AbstractRequest
         }
 
         // MPI data specific for the auth request
-        $request->mpi->cvv               = $this->getCavv();
+        $request->mpi->cavv               = $this->getCavv();
         $request->mpi->xid               = $this->getXid();
         $request->mpi->eci               = $this->getEci();
         $request->sha1hash               = $data['SHA1HASH'];
@@ -139,7 +136,7 @@ class RemoteCompletePurchaseRequest extends AbstractRequest
     protected function validateResponse()
     {
         // If we get a 500 error, we should send back an issue
-        if((string)$this->responseData->result == 508)
+        if((string)$this->responseData->result >= 500)
             return (string)$this->responseData->message;
 
         return true;
