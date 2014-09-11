@@ -3,6 +3,7 @@
 namespace Omnipay\Realex\Message;
 
 use Omnipay\Common\Exception\InvalidCreditCardException;
+use Guzzle\Http\ClientInterface;
 
 /**
  * Realex Remote Authorize Request
@@ -33,27 +34,6 @@ class RemoteAuthorizeRequest extends AbstractRequest
         if($validationMessage !== true)
             throw new \Exception($validationMessage);
 
-        // If the card is not enrolled, and no attempt URL is provided, we can go straight to auth
-        if(((string)$this->responseData->result == 110) && ((string)$this->responseData->enrolled == "N")) {
-            // get some card detils
-            $card = $this->getCard();
-
-            // Set the ECI type based on the card
-            $eci = ($card->getBrand() == "visa" ? 6 : 1);
-
-            echo "ECI " . $eci . " Auth Send: Please contact support";
-            exit;
-
-        } elseif(((string)$this->responseData->result == 110) && ((string)$this->responseData->enrolled == "U")) {
-            
-            // Unable to verfiy enrollment
-            $eci = 7;
-
-            echo "ECI 7 Auth Send: Please contact support";
-            exit;
-
-        }
-
         // Get card and order details
         $card = $this->getCard();
         $mdData = array(
@@ -70,6 +50,50 @@ class RemoteAuthorizeRequest extends AbstractRequest
             "transactionid"     => (string)$this->responseData->orderid,
             "store"             => $this->getStore()
         );
+
+        // If the card is not enrolled, and no attempt URL is provided, we can go straight to auth
+        if(((string)$this->responseData->result == 110) && ((string)$this->responseData->enrolled == "N")) {
+            
+            // get some card details
+            $card = $this->getCard();
+
+            // Set the ECI type based on the card
+            $eci = ($card->getBrand() == "visa" ? 6 : 1);
+
+            // MD data
+            $reference = http_build_query($mdData);
+            $response['data']['PaReq'] = (string)$this->responseData->pareq;
+            $response['data']['MD'] = base64_encode($reference);
+            $response['data']['transactionid'] = (string)$this->responseData->orderid;
+            $response['data']['xid'] = (string)$this->responseData->xid;
+            $response['data']['eci'] = $eci;
+            $response['url'] = "https://api.molt.in/beta/checkout/complete_purchase";
+            $response['enrolled'] = false;
+
+            // Return for the redirect
+            return $this->createResponse($response, true);
+
+        } elseif(((string)$this->responseData->result == 110) && ((string)$this->responseData->enrolled == "U")) {
+            
+            // get some card details
+            $card = $this->getCard();
+
+            // Set the ECI type based on the card
+            $eci = ($card->getBrand() == "visa" ? 6 : 1);
+
+            // MD data
+            $reference = http_build_query($mdData);
+            $response['data']['PaReq'] = (string)$this->responseData->pareq;
+            $response['data']['MD'] = base64_encode($reference);
+            $response['data']['transactionid'] = (string)$this->responseData->orderid;
+            $response['data']['xid'] = (string)$this->responseData->xid;
+            $response['data']['eci'] = $eci;
+            $response['url'] = "https://api.molt.in/beta/checkout/complete_purchase";
+            $response['enrolled'] = false;
+
+            // Return for the redirect
+            return $this->createResponse($response, true);
+        }
 
         // Build a query from the array data
         $reference = http_build_query($mdData);
