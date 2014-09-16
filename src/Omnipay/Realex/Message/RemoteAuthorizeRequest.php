@@ -67,7 +67,7 @@ class RemoteAuthorizeRequest extends AbstractRequest
             $response['data']['transactionid'] = (string)$this->responseData->orderid;
             $response['data']['xid'] = (string)$this->responseData->xid;
             $response['data']['eci'] = $eci;
-            $response['url'] = "https://api.molt.in/beta/checkout/complete_purchase";
+            $response['url'] = "https://api.molt.in/beta/checkout/payment/complete_purchase";
             $response['enrolled'] = false;
 
             // Return for the redirect
@@ -88,7 +88,7 @@ class RemoteAuthorizeRequest extends AbstractRequest
             $response['data']['transactionid'] = (string)$this->responseData->orderid;
             $response['data']['xid'] = (string)$this->responseData->xid;
             $response['data']['eci'] = $eci;
-            $response['url'] = "https://api.molt.in/beta/checkout/complete_purchase";
+            $response['url'] = "https://api.molt.in/beta/checkout/payment/complete_purchase";
             $response['enrolled'] = false;
 
             // Return for the redirect
