@@ -3,6 +3,7 @@
 namespace Omnipay\Realex\Message;
 
 use Omnipay\Common\Exception\InvalidResponseException;
+use Omnipay\Common\Exception\OmnipayException;
 
 /**
  * Realex Remote Complete Authorize Request
@@ -29,7 +30,7 @@ class RemoteCompleteAuthorizeRequest extends AbstractRequest
         // Verify the request via some error codes
         $validationMessage = $this->validateResponse();
         if($validationMessage !== true)
-            throw new InvalidResponseException($validationMessage);
+            throw new OmnipayException($validationMessage);
 
         // Port some variables into a neat array
         $storeArray = $this->getStore();

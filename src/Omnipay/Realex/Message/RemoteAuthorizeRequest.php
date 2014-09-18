@@ -4,6 +4,7 @@ namespace Omnipay\Realex\Message;
 
 use Omnipay\Common\Exception\InvalidCreditCardException;
 use Guzzle\Http\ClientInterface;
+use Omnipay\Common\Exception\OmnipayException;
 
 /**
  * Realex Remote Authorize Request
@@ -32,7 +33,7 @@ class RemoteAuthorizeRequest extends AbstractRequest
         // Verify the request via some error codes
         $validationMessage = $this->validateResponse();
         if($validationMessage !== true)
-            throw new \Exception($validationMessage);
+            throw new OmnipayException($validationMessage);
 
         // Get card and order details
         $card = $this->getCard();
