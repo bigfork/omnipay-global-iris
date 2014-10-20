@@ -141,6 +141,10 @@ class RemoteCompletePurchaseRequest extends AbstractRequest
         if((string)$this->responseData->result >= 500)
             return (string)$this->responseData->message;
 
+        // This checks for a test card in a live scenario
+        if((string)$this->responseData->result == 101)
+           return "This card has been declined: " . (string)$this->responseData->message;
+
         return true;
     }
 
