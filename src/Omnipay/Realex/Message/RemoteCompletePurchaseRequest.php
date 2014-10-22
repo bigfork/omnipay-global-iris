@@ -141,9 +141,17 @@ class RemoteCompletePurchaseRequest extends AbstractRequest
         if((string)$this->responseData->result >= 500)
             return (string)$this->responseData->message;
 
-        // This checks for a test card in a live scenario
-        if((string)$this->responseData->result == 101)
+        // This checks for aay 100 codes which usually result in declined, lost, stolen, or bad cards
+        if(((string)$this->responseData->result > 100) && ((string)$this->responseData->result < 200))
            return "This card has been declined: " . (string)$this->responseData->message;
+
+        // This checks for 200 errors which are usually bank issues
+        if(((string)$this->responseData->result > 199) && ((string)$this->responseData->result < 300))
+           return "There has been an error contacting your bank: " . (string)$this->responseData->message;
+
+        // This checks for any 300 errors which are specific to realex
+        if(((string)$this->responseData->result > 299) && ((string)$this->responseData->result < 400))
+           return "There is some difficulty contacting the payment gateway: " . (string)$this->responseData->message;
 
         return true;
     }
