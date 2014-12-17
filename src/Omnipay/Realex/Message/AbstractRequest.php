@@ -131,6 +131,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function getRequestXML($card, $autoSettle = true, $extraData = array(), $addressData = true, $cardData = true)
     {
         $data    = $this->getBaseData($autoSettle, $card);
+        $brand   = (strcasecmp($card->getBrand(), "mastercard") == 0) ? "mc" : $card->getBrand();
         $request = new \SimpleXMLElement('<request />');
 
         $request['timestamp']        = $data['TIMESTAMP'];
@@ -149,7 +150,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
         $request->card->number       = $card->getNumber();
         $request->card->expdate      = $card->getExpiryDate('my');
-        $request->card->type         = strtoupper($card->getBrand());
+        $request->card->type         = strtoupper($brand);
         $request->card->chname       = $card->getName();
 
         // Not all request want this data
