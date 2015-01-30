@@ -60,6 +60,7 @@ class RemoteCompletePurchaseRequest extends AbstractRequest
     public function getRequestXML($card, $autoSettle = true, $extraData = array(), $addressData = true, $cardData = true)
     {
         $data    = $this->getBaseData($autoSettle, $card);
+        $brand   = (strcasecmp($card->getBrand(), "mastercard") == 0) ? "mc" : $card->getBrand();
         $request = new \SimpleXMLElement('<request />');
 
         $request['timestamp']        = $data['TIMESTAMP'];
@@ -77,7 +78,7 @@ class RemoteCompletePurchaseRequest extends AbstractRequest
 
         $request->card->number       = $card->getNumber();
         $request->card->expdate      = $card->getExpiryDate('my');
-        $request->card->type         = strtoupper($card->getBrand());
+        $request->card->type         = $brand;
         $request->card->chname       = $card->getName();
 
         // Not all request want this data
