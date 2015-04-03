@@ -155,9 +155,10 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
         // Not all request want this data
         if($cardData) {
-            $request->card->issueno      = $card->getIssueNumber();
-            $request->card->cvn->number  = $card->getCvv();
-            $request->card->cvn->presind = '1';
+            $request->card->issueno = $card->getIssueNumber();
+            $request->card->addChild('cvn');
+            $request->card->cvn->addChild('number', $card->getCvv());
+            $request->card->cvn->addChild('presind', 1);
         }
 
         // not all requests want this data
