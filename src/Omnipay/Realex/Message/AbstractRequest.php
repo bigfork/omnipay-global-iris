@@ -148,6 +148,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
         $request->autosettle['flag'] = (int)$data['AUTO_SETTLE_FLAG'];
 
+        // Flesh out the XML structure
+        $request->addChild('card');
+        $request->card->addChild('cvn');
         $request->card->number       = $card->getNumber();
         $request->card->expdate      = $card->getExpiryDate('my');
         $request->card->type         = strtoupper($brand);
