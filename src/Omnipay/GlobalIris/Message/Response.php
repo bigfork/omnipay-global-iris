@@ -1,12 +1,12 @@
 <?php
 
-namespace Omnipay\Realex\Message;
+namespace Omnipay\GlobalIris\Message;
 
 use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Common\Message\RequestInterface;
 
 /**
- * Realex Response
+ * GlobalIris Response
  */
 class Response extends AbstractResponse
 {

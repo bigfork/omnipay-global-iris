@@ -1,9 +1,9 @@
 {
-    "name": "jholdroyd/omnipay-realex",
+    "name": "maclof/omnipay-global-iris",
     "type": "library",
     "description": "Realex gateway for Omnipay payment processing library",
     "keywords": [
-        "realex",
+        "global-iris",
         "gateway",
         "merchant",
         "omnipay",
@@ -11,7 +11,7 @@
         "payment",
         "purchase"
     ],
-    "homepage": "https://github.com/jholdroyd/omnipay-realex",
+    "homepage": "https://github.com/maclof/omnipay-global-iris",
     "license": "MIT",
     "authors": [
         {

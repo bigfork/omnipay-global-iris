@@ -1,9 +1,9 @@
-# Omnipay: Realex
+# Omnipay: Global Iris
 
-**Realex driver for the Omnipay PHP payment processing library**
+**Global Iris driver for the Omnipay PHP payment processing library**
 
-[![Latest Stable Version](https://poser.pugx.org/jholdroyd/omnipay-realex/version.png)](https://packagist.org/packages/jholdroyd/omnipay-realex)
-[![Total Downloads](https://poser.pugx.org/jholdroyd/omnipay-realex/d/total.png)](https://packagist.org/packages/jholdroyd/omnipay-realex)
+[![Latest Stable Version](https://poser.pugx.org/maclof/omnipay-global-iris/version.png)](https://packagist.org/packages/maclof/omnipay-global-iris)
+[![Total Downloads](https://poser.pugx.org/maclof/omnipay-global-iris/d/total.png)](https://packagist.org/packages/maclof/omnipay-global-iris)
 
 [Omnipay](https://github.com/omnipay/omnipay) is a framework agnostic, multi-gateway payment
 processing library for PHP 5.3+. This package implements Alipay support for Omnipay.
@@ -17,7 +17,7 @@ to your `composer.json` file:
 ```json
 {
     "require": {
-        "jholdroyd/omnipay-realex": "dev-master"
+        "maclof/omnipay-global-iris": "dev-master"
     }
 }
 ```
@@ -32,8 +32,7 @@ And run composer to update your dependencies:
 The following gateways are provided by this package:
 
 
-* Realex_Redirect (Realex Hosted Payment Page)
-* Realex_Remote (Realex API)
+* Global_Iris_Redirect (Global Iris Real Auth Redirect)
 
 For general usage instructions, please see the main [Omnipay](https://github.com/omnipay/omnipay)
 repository.
@@ -48,5 +47,5 @@ If you want to keep up to date with release anouncements, discuss ideas for the 
 or ask more detailed questions, there is also a [mailing list](https://groups.google.com/forum/#!forum/omnipay) which
 you can subscribe to.
 
-If you believe you have found a bug, please report it using the [GitHub issue tracker](https://github.com/jholdroyd/omnipay-realex/issues),
+If you believe you have found a bug, please report it using the [GitHub issue tracker](https://github.com/maclof/omnipay-global-iris/issues),
 or better yet, fork the library and submit a pull request.
