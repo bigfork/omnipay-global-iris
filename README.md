@@ -32,7 +32,7 @@ And run composer to update your dependencies:
 The following gateways are provided by this package:
 
 
-* Global_Iris_Redirect (Global Iris Real Auth Redirect)
+* GlobalIris_Redirect (Global Iris Real Auth Redirect)
 
 For general usage instructions, please see the main [Omnipay](https://github.com/omnipay/omnipay)
 repository.
