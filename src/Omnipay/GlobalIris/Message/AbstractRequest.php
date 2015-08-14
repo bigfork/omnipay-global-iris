@@ -101,6 +101,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 	{
 		$data = array(
 			'MERCHANT_ID'           => $this->getMerchantId(),
+			'ACCOUNT'               => $this->getAccount(),
 			'ORDER_ID'              => $this->getTransactionId(),
 			'CURRENCY'              => $this->getCurrency(),
 			'MERCHANT_RESPONSE_URL' => $this->getReturnUrl(),
