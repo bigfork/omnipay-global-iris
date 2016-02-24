@@ -97,6 +97,46 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 		return $this->getParameter('notifyUrl');
 	}
 
+	public function setComment1($value)
+	{
+		return $this->setParameter('comment1', $value);
+	}
+
+	public function getComment1()
+	{
+		return $this->getParameter('comment1');
+	}
+
+	public function setComment2($value)
+	{
+		return $this->setParameter('comment2', $value);
+	}
+
+	public function getComment2()
+	{
+		return $this->getParameter('comment2');
+	}
+
+	public function setVarRef($value)
+	{
+		return $this->setParameter('varRef', $value);
+	}
+
+	public function getVarRef()
+	{
+		return $this->getParameter('varRef');
+	}
+
+	public function setProdID($value)
+	{
+		return $this->setParameter('prodID', $value);
+	}
+
+	public function getProdID()
+	{
+		return $this->getParameter('prodID');
+	}
+
 	public function getBaseData($autoSettle = true, $card = null)
 	{
 		$data = array(
@@ -107,7 +147,11 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 			'MERCHANT_RESPONSE_URL' => $this->getReturnUrl(),
 			'AMOUNT'                => round($this->getAmount() * 100),
 			'TIMESTAMP'             => gmdate('YmdHis'),
-			'AUTO_SETTLE_FLAG'      => $autoSettle
+			'AUTO_SETTLE_FLAG'      => $autoSettle,
+			'COMMENT1'              => $this->getComment1(),
+			'COMMENT2'              => $this->getComment2(),
+			'VAR_REF'               => $this->getVarRef(),
+			'PROD_ID'               => $this->getProdID()
 		);
 
 		$data['SHA1HASH'] = $this->createSignature($data, 'sha1', $card);
